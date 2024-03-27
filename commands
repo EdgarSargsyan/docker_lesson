@@ -1,0 +1,29 @@
+# create custom network with 10.10.0.0/16 subnet
+docker network create \
+  --subnet=10.10.0.0/16 \
+  --gateway=10.10.255.254 \
+  MyNetwork
+
+
+# created Dockerfile
+
+
+# build the image with test_image name
+docker build -t test_image:v1 .
+
+
+# run container from test_image image with test_c name which listens to 8080 port
+docker run -d --name test_c -p 8080:80 --network MyNetwork test_image:v1
+
+
+# run ubuntu image in MyNetwork
+docker run  -dti --network MyNetwork --name my_ubuntu ubuntu:latest 
+
+
+# go into container
+docker exec -ti my_ubuntu bash
+# install necessary apps for ping
+apt-get update && apt-get install -y iputils-ping
+
+# reach test_c by hostname 
+ping test_c
